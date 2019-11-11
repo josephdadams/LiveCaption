@@ -1,0 +1,22 @@
+{
+    "name": "LiveCaption",
+    "version": "1.0.0",
+	"description": "Transcribes audio and sends to a master server which can then relay the text to many clients in real-time.",
+    "keywords": [
+        "util",
+        "functional",
+        "server",
+        "client",
+        "browser",
+		"captions",
+		"captioning",
+		"transcriptions",
+		"transcribe",
+    ],
+    "author": "Joseph Adams <josephdadams@gmail.com>",
+    "dependencies": {
+        "body-parser": "^1.18.3",
+        "express": "^4.16.3",
+        "socket.io": "^2.1.1"
+    }
+}

@@ -1,0 +1,1042 @@
+<!doctype html>
+<html>
+<head>
+	<title>LiveCaption Bridge</title>
+<meta charset='UTF-8'>
+<style>
+	body {
+		font-family: Helvetica, Arial;
+		background:#efefef;
+	}
+	
+	.onoffswitch {
+		position: relative; width: 130px;
+		-webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+	}
+	
+	.onoffswitch-checkbox {
+		display: none;
+	}
+	
+	.onoffswitch-label {
+		display: block; overflow: hidden; cursor: pointer;
+		border: 2px solid #E3E3E3; border-radius: 36px;
+	}
+	
+	.onoffswitch-inner {
+		display: block; width: 200%; margin-left: -100%;
+		transition: margin 0.3s ease-in 0s;
+	}
+	
+	.onoffswitch-inner:before, .onoffswitch-inner:after {
+		display: block; float: left; width: 50%; height: 21px; padding: 0; line-height: 21px;
+		font-size: 16px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+		box-sizing: border-box;
+	}
+	
+	.onoffswitch-inner-senddata:before {
+		content: 'Send Data';
+		padding-left: 10px;
+		background-color: #FFFFFF; color: #000000;
+	}
+	
+	.onoffswitch-inner-senddata:after {
+		content: 'Do Not Send Data';
+		padding-right: 10px;
+		background-color: #FFFFFF; color: #666666;
+		text-align: right;
+	}
+	
+	.onoffswitch-inner-GoToLogo:before {
+		content: 'Logo On';
+		padding-left: 10px;
+		background-color: #FFFFFF; color: #000000;
+	}
+	
+	.onoffswitch-inner-GoToLogo:after {
+		content: 'Logo Off';
+		padding-right: 10px;
+		background-color: #FFFFFF; color: #666666;
+		text-align: right;
+	}
+
+	.onoffswitch-inner-KeepAwake:before {
+		content: 'Keep Awake';
+		padding-left: 10px;
+		background-color: #FFFFFF; color: #000000;
+	}
+	
+	.onoffswitch-inner-KeepAwake:after {
+		content: 'Let Sleep';
+		padding-right: 10px;
+		background-color: #FFFFFF; color: #666666;
+		text-align: right;
+	}
+
+	.onoffswitch-switch {
+		display: block; width: 21px; margin: 0px;
+		background: #A1A1A1;
+		position: absolute; top: 0; bottom: 0;
+		right: 106px;
+		border: 2px solid #E3E3E3; border-radius: 36px;
+		transition: all 0.3s ease-in 0s; 
+	}
+	
+	.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+		margin-left: 0;
+	}
+	
+	.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+		right: 0px; 
+		background-color: #27A1CA; 
+	}
+
+	.dot {
+		height: 10px;
+		width: 10px;
+		border-radius: 50%;
+		display: inline-block;
+	}
+	
+	.connected {
+		color: #00aa00;
+	}
+	
+	.connected_dot {
+		background-color: #00aa00;
+	}
+	
+	.disconnected {
+		color: #cccccc;
+	}
+	
+	.disconnected_dot {
+		background-color: #bbb;
+	}
+	
+	.error {
+		color: #ff0000;
+		font-weight: bold;
+	}
+	
+	.normal {
+		color: #000000;
+	}
+	
+	.normal-bold {
+		color: #000000;
+		font-weight: bold;
+	}
+	
+	.error_dot {
+		background-color: #ff0000;
+	}
+	
+	.expired {
+		color: #666666;
+	}
+	
+	#divTitle {
+		position: absolute;
+		top: 10px;
+		left: 175px;
+	}
+	
+	#container {
+		position: relative;
+	}
+	
+	#divCaptionConfig {
+		background: #ffffff;
+		width: 250px;
+		height: 175px;
+		padding: 5px;
+		position: absolute;
+		top: 50px;
+		left: 10px;
+	}
+		
+	#spanBridgeConnectionStatusCircle {
+		position: absolute;
+		top: 5px;
+		left: 245px;
+	}
+	
+	#divBridgeConfig {
+		background: #ffffff;
+		width: 250px;
+		height: 175px;
+		padding: 5px;
+		position: absolute;
+		top: 50px;
+		left: 275px;
+	}
+	
+	#divConnectionStatus {
+		background: #ffffff;
+		width: 515px;
+		height: 100px;
+		padding: 5px;
+		position: absolute;
+		top: 240px;
+		left: 10px;
+		display: inline-block;
+		visibility: hidden;
+		opacity: 0;
+		transition: visibility 0s, opacity 0.5s linear;
+	}
+	
+	#divSendToBridge {
+		position: absolute;
+		top: 5px;
+		left: 210px;
+		display: none;
+	}
+	
+	#divGoToLogo {
+		position: absolute;
+		top: 40px;
+		left: 210px;
+		display: none;
+	}
+	
+	#divLogContainer {
+		background: #ffffff;
+		width: 515px;
+		height: 100px;
+		padding: 5px;
+		position: absolute;
+		top: 495px;
+		left: 10px;
+		margin: 0 auto;
+		visibility: hidden;
+		opacity: 0;
+		transition: visibility 0s, opacity 0.5s linear;
+	}
+	
+	#divLog {
+		background: #cccccc;
+		font-family: monospace;
+		padding: 5px;
+		width: 510px;
+		height: 100px;
+		overflow-y: scroll;
+		-webkit-user-select: text;
+	}
+	
+	#selBridgeList {
+		position: absolute;
+		top: 70px;
+		left: 80px;
+	}
+	
+	#labelBridgeControlPassword {
+		position: absolute;
+		font-size: 12px;
+		top: 103px;
+		left: 20px;
+		display: none;
+	}
+	
+	#txtBridgeControlPassword {
+		position: absolute;
+		top: 100px;
+		left: 80px;
+		display: none;
+	}
+	
+	#btnStartListening {
+		position: absolute;
+		top: 140px;
+		left: 155px;
+		width: 100px;
+		height: 40px;
+		background-color: #38cc94;
+		color: #ffffff;
+	}
+	
+	#btnStopListening {
+		position: absolute;
+		top: 140px;
+		left: 155px;
+		width: 100px;
+		height: 40px;
+		background-color: #aa3333;
+		color: #ffffff;
+		display: none;
+	}
+	
+	#btnConnectToBridge {
+		position: absolute;
+		top: 140px;
+		left: 155px;
+		width: 100px;
+		height: 40px;
+		background-color: #3894ff;
+		color: #ffffff;
+	}
+	
+	#btnDisconnectBridge {
+		position: absolute;
+		top: 140px;
+		left: 155px;
+		width: 100px;
+		height: 40px;
+		background-color: #990000;
+		color: #ffffff;
+		display: none;
+	}
+	
+	#settingsImage {
+		position: absolute;
+		width: 20px;
+		height: 20px;
+		top: 160px;
+		left: 5px;
+	}
+	
+	#divAnnouncements {
+		background: #ffffff;
+		width: 515px;
+		height: 125px;
+		padding: 5px;
+		position: absolute;
+		top: 355px;
+		left: 10px;
+		visibility: hidden;
+		opacity: 0;
+		transition: visibility 0s, opacity 0.5s linear;
+	}
+	
+	#txtAnnouncements_URL {
+		width: 200px;
+	}
+	
+	#btnAnnouncements_RedirectTo {
+		position: absolute;
+		top: 10px;
+		left: 215px;
+		width: 100px;
+		height: 40px;
+		background-color: #3894ff;
+		color: #ffffff;
+	}
+	
+	#txtAnnouncements_Text {
+		width: 200px;
+		height: 40px;
+	}
+	
+	#btnAnnouncements_SendText {
+		position: absolute;
+		top: 80px;
+		left: 215px;
+		width: 100px;
+		height: 40px;
+		background-color: #3894ff;
+		color: #ffffff;
+	}
+	
+	#btnAnnouncements_ReloadListeners {
+		position: absolute;
+		top: 75px;
+		left: 415px;
+		width: 100px;
+		height: 50px;
+		background-color: #3894ff;
+		color: #ffffff;
+	}
+	
+	#divKeepAwake {
+		position: absolute;
+		top: 75px;
+		left: 210px;
+		display: none;
+	}
+	
+	#divCaptionsContainer {
+		background: #cccccc;
+		height: 185px;
+		width: 515px;
+		position: absolute;
+		top: 50px;
+		left: 540px;
+		overflow-y: scroll;
+		visibility: hidden;
+		opacity: 0;
+		transition: visibility 0s, opacity 0.5s linear;
+	}
+	
+	#divCaptions {
+		font-family: Monospace, Helvetica;
+	}
+	
+	#divCaptionControls {
+		position: absolute;
+		bottom: 2px;
+		right: 2px;
+		z-index: 1;
+	}
+	
+	#divWordDictionaryContainer {
+		background: #dddddd;
+		height: 185px;
+		width: 515px;
+		position: absolute;
+		padding: 5px;
+		top: 615px;
+		left: 10px;
+		overflow-y: scroll;
+		visibility: hidden;
+		opacity: 0;
+		transition: visibility 0s, opacity 0.5s linear;
+	}
+	
+	.wordLabel {
+		display: inline-block;
+		float: left;
+		clear: left;
+		width: 250px;
+		text-align: right;
+	}
+	
+	.wordInput {
+	  display: inline-block;
+	  float: left;
+	}
+	
+	.wordButton {
+		display: inline-block;
+	}
+</style>
+<script type='text/javascript' src='/lib/jquery-1.12.0.min.js'></script>
+<script type='text/javascript' src='/lib/jquery.json.min.js'></script>
+<script type='text/javascript' src='/lib/jquery.simple.websocket.js'></script>
+<script src='/socket.io/socket.io.js'></script>
+<script type='text/javascript'>
+var webSocketRemote = null;
+var webSocketStageDisplay = null;
+var config = {};
+
+var Bridges = []; // the active array of Bridge Rooms available, updates dynamically as new bridges are created
+
+var socket = null;
+var Clients = []; // array of currently connected clients
+
+var __bridgeEnabled = false;
+var selectedBridgeID = '';
+	
+var recognition = null;
+var finalTranscript = '';
+	
+var WordDictionary = [];
+	
+var speechListenerStopped = false;
+
+function onLoad() {
+	document.getElementById('btnStartListening').addEventListener('click', function (e) {
+		speechListenerStopped = false;
+		startSpeechAPI();
+	});
+	
+	document.getElementById('btnStopListening').addEventListener('click', function (e) {
+		speechListenerStopped = true;
+		stopSpeechAPI();
+	});
+	
+	document.getElementById('btnConnectToBridge').addEventListener('click', function (e) {
+		BridgeRooms_Login();
+	});
+	
+	document.getElementById('btnDisconnectBridge').addEventListener('click', function (e) {
+		BridgeRooms_Disconnect();
+	});
+	
+	document.getElementById('btnAnnouncements_RedirectTo').addEventListener('click', function (e) {
+		Bridge_Redirect();
+	});
+	
+	document.getElementById('btnAnnouncements_SendText').addEventListener('click', function (e) {
+		Bridge_SendAnnouncement();
+	});
+	
+	document.getElementById('btnAnnouncements_ReloadListeners').addEventListener('click', function (e) {
+		Bridge_Reload();
+	});
+	
+	document.getElementById('chkSendToBridge').addEventListener('click', function (e) {
+		__bridgeEnabled = document.getElementById('chkSendToBridge').checked;
+		if (__bridgeEnabled)
+		{
+			//Bridge_GoToLogo(false);
+		}
+		else
+		{
+			//Bridge_GoToLogo(true);
+		}
+	});
+	
+	document.getElementById('chkGoToLogo').addEventListener('click', function (e) {
+		Bridge_GoToLogo(document.getElementById('chkGoToLogo').checked);
+	});
+	
+	document.getElementById('chkKeepAwake').addEventListener('click', function (e) {
+		Bridge_KeepAwake(document.getElementById('chkKeepAwake').checked);
+	});
+	
+	document.getElementById('btnClearCaptions').addEventListener('click', function (e) {
+		Bridge_ClearCaptions();
+	});
+	
+	document.getElementById('btnSaveCaptions').addEventListener('click', function (e) {
+		Bridge_SaveCaptions();
+	});
+	
+	document.getElementById('btnAddWord').addEventListener('click', function (e) {
+		let word = document.getElementById('txtWord').value;
+		let replaceWord = document.getElementById('txtReplacementWord').value;
+		
+		addReplaceWord(word, replaceWord);
+	});
+	
+	BridgeRooms_Connect();
+	setupSpeechAPI();
+}
+
+function updateLog(text, cssClass) {
+	let divLog = document.getElementById('divLog');
+	let span = document.createElement('span'); // new log entry
+	
+	span.innerHTML = text;
+	span.className = cssClass;
+	span.style.display = 'block';
+	
+	divLog.appendChild(span);
+	divLog.scrollTop = divLog.scrollHeight;
+}
+
+function BridgeRooms_Connect() {	
+	socket = io.connect();
+
+	socket.on('connect', function() {
+		socket.emit('room', 'BridgeRooms');
+		socket.emit('bridgerooms_getall');
+		socket.emit('config_getgloballogo');
+	});
+	
+	socket.on('bridgerooms', function (bridgeArray) {
+		Bridges = bridgeArray;
+		updateBridgeList();
+	});
+	
+	socket.on('config_globallogo', function(logo) {
+		let imgGlobalLogo = document.createElement('img');
+		imgGlobalLogo.src = logo;
+		imgGlobalLogo.height = '35';
+		imgGlobalLogo.style.border = '#000000 1px solid';
+		document.getElementById('divGlobalCurrentLogo').innerHTML = '';
+		document.getElementById('divGlobalCurrentLogo').style.background = '#999999';
+		document.getElementById('divGlobalCurrentLogo').appendChild(imgGlobalLogo);
+	});
+	
+	socket.on('bridgerooms_authenticated', function(authValue) {
+		if (authValue) {
+			updateLog('Connected to Bridge.', 'connected');
+			Bridge_GoToLogo(true);
+			Bridge_ClearCaptions();
+			document.getElementById('chkGoToLogo').checked = true;
+			document.getElementById('spanBridgeConnectionStatusCircle').className = 'dot connected_dot';
+			document.getElementById('txtBridgeControlPassword').disabled = true;
+			document.getElementById('btnConnectToBridge').style.display = 'none';
+			document.getElementById('btnDisconnectBridge').style.display = 'block';
+			document.getElementById('divSendToBridge').style.display = 'block';
+			document.getElementById('divGoToLogo').style.display = 'block';
+			document.getElementById('divKeepAwake').style.display = 'block';
+			document.getElementById('divLogContainer').style.visibility = 'visible';
+			document.getElementById('divLogContainer').style.opacity = '1';
+			document.getElementById('divConnectionStatus').style.visibility = 'visible';
+			document.getElementById('divConnectionStatus').style.opacity = '1';
+			document.getElementById('divAnnouncements').style.visibility = 'visible';
+			document.getElementById('divAnnouncements').style.opacity = '1';
+			document.getElementById('divCaptionsContainer').style.height = '560px';
+			document.getElementById('divWordDictionaryContainer').style.visibility = 'visible';
+			document.getElementById('divWordDictionaryContainer').style.opacity = '1';
+		}
+		else {
+			updateLog('Error connecting to Bridge: Password was incorrect.', 'error');
+			document.getElementById('spanBridgeConnectionStatusCircle').className = 'dot error_dot';
+			document.getElementById('divLogContainer').style.visibility = 'visible';
+			document.getElementById('divLogContainer').style.opacity = '1';
+		}
+	});
+	
+	socket.on('bridgerooms_inuse', function(value) {
+		if (value) {
+			updateLog('Error connecting to Bridge: Bridge already in use.', 'error');
+			document.getElementById('spanBridgeConnectionStatusCircle').className = 'dot error_dot';
+			document.getElementById('divLogContainer').style.visibility = 'visible';
+			document.getElementById('divLogContainer').style.opacity = '1';
+		}
+	});
+	
+	socket.on('bridgerooms_selectedbridge', function(bridgeID) {
+		selectedBridgeID = bridgeID; 
+	});
+	
+	socket.on('client_connected', function(clientObj) {
+		AddClient(clientObj);
+	});
+	
+	socket.on('client_disconnected', function(socketID) {
+		RemoveClient(socketID);
+	});
+	
+	socket.on('word_dictionary', function (wordDictionaryArray) {
+		//loads the global word dictionary array into memory for automatic word replacement as needed
+		WordDictionary = wordDictionaryArray;
+		updateWordList();
+	});
+	
+	socket.on('bridge_control', function(command) {
+		//controls the bridge remotely from API commands received at the server
+		switch(command) {
+			case 'startlistening':
+				startSpeechAPI();
+				break;
+			case 'stoplistening':
+				speechListenerStopped = true;
+				stopSpeechAPI();
+				break;
+			case 'senddata':
+				document.getElementById('chkSendToBridge').checked = true;
+				break;
+			case 'stopdata':
+				document.getElementById('chkSendToBridge').checked = false;
+				break;
+			case 'logoon':
+				Bridge_GoToLogo(true);
+				document.getElementById('chkGoToLogo').checked = true;
+				break;
+			case 'logooff':
+				Bridge_GoToLogo(false);
+				document.getElementById('chkGoToLogo').checked = false;
+				break;
+			default:
+				break;
+		}
+	});
+}
+
+function AddClient(clientObj) {
+	Clients.push(clientObj);
+	UpdateConnectedClients();
+}
+
+function RemoveClient(socketID) {
+	let index = null;
+	
+	for (let i = 0; i < Clients.length; i++) {
+		if (Clients[i].socketID === socketID) {
+			index = i;
+			break;
+		}
+	}
+	
+	if (index !== null) {
+		Clients.splice(index, 1);
+	}
+	
+	UpdateConnectedClients();
+}
+
+function UpdateConnectedClients() {
+	let clients = Clients.filter(function (obj) { return obj.roomType.toString() === 'Listener'; });
+	
+	document.getElementById('clientsNumber').innerHTML = clients.length;
+}
+
+function BridgeRooms_Login() {
+	let bridgeID = document.getElementById('selBridgeList').options[document.getElementById('selBridgeList').selectedIndex].value;
+	
+	if (bridgeID !== '0') {
+		let password = document.getElementById('txtBridgeControlPassword').value;
+		socket.emit('bridgerooms_authenticate', bridgeID, password);
+	}
+	else {
+		//alert to select a bridge ID
+		alert('Please select a Bridge to log in.');
+	}
+}
+
+function BridgeRooms_Disconnect() {
+	socket.emit('bridgerooms_disconnect', selectedBridgeID, false);
+	document.getElementById('spanBridgeConnectionStatusCircle').className = 'dot disconnected_dot';
+	document.getElementById('btnConnectToBridge').style.display = 'block';
+	document.getElementById('btnDisconnectBridge').style.display = 'none';
+	document.getElementById('txtBridgeControlPassword').disabled = false;
+	document.getElementById('divSendToBridge').style.display = 'none';
+	document.getElementById('divGoToLogo').style.display = 'none';
+	document.getElementById('divKeepAwake').style.display = 'none';
+	document.getElementById('divLogContainer').style.visibility = 'hidden';
+	document.getElementById('divLogContainer').style.opacity = '0';
+	document.getElementById('divConnectionStatus').style.visibility = 'hidden';
+	document.getElementById('divConnectionStatus').style.opacity = '0';
+	document.getElementById('divAnnouncements').style.visibility = 'hidden';
+	document.getElementById('divAnnouncements').style.opacity = '0';
+	document.getElementById('divConnectedClients').style.visibility = 'hidden';
+	document.getElementById('divConnectedClients').style.opacity = '0';
+	document.getElementById('divCaptionsContainer').style.height = '185px';
+	document.getElementById('divWordDictionaryContainer').style.visibility = 'hidden';
+	document.getElementById('divWordDictionaryContainer').style.opacity = '0';
+	WordDictionary = [];
+}
+
+function Bridge_GoToLogo(value) {
+	socket.emit('gotologo', selectedBridgeID, value);
+	if (value) {
+		updateLog('Logo turned on.');
+	}
+	else {
+		updateLog('Logo turned off.');
+	}
+}
+
+function Bridge_KeepAwake(value) {
+	socket.emit('keepawake', selectedBridgeID, value);
+}
+
+function Bridge_Redirect() {
+	let redirectURL = document.getElementById('txtAnnouncements_URL').value
+	socket.emit('redirect', selectedBridgeID, redirectURL);
+	updateLog('Redirected to: ' + redirectURL);
+}
+
+function Bridge_SendAnnouncement() {
+	let announcementText = document.getElementById('txtAnnouncements_Text').value;
+	socket.emit('announcement', selectedBridgeID, announcementText);
+	updateLog('Announcement sent: ' + announcementText);
+}
+
+function Bridge_Reload() {
+	socket.emit('reload', selectedBridgeID, true);
+	updateLog('All listeners to this bridge were reloaded.');
+}
+	
+function Bridge_ClearCaptions() {
+	finalTranscript = '';
+	document.getElementById('divCaptions').innerHTML = '';
+	socket.emit('clearcaptions', selectedBridgeID);
+	updateLog('All current captions cleared.');
+}
+	
+function Bridge_SaveCaptions() {
+	let filename = selectedBridgeID + '_' + getFormattedTime();
+	let type = 'text/plain;charset=UTF-8';
+	
+	download(finalTranscript, filename, type);
+}
+	
+function getFormattedTime() {
+    var today = new Date();
+    var y = today.getFullYear();
+    // JavaScript months are 0-based.
+    var m = today.getMonth() + 1;
+    var d = today.getDate();
+    var h = today.getHours();
+    var mi = today.getMinutes();
+    var s = today.getSeconds();
+    return y + "_" + m + "_" + d;
+}
+	
+function download(data, filename, type) {
+    var file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);  
+        }, 0); 
+    }
+}
+
+function updateBridgeList() {
+	var selBridgeList = document.getElementById('selBridgeList');
+	selBridgeList.options.length = 0;
+	
+	let opt_default = document.createElement('option');
+	opt_default.value = '0';
+	opt_default.text = '(select a bridge)';
+	selBridgeList.appendChild(opt_default);
+	
+	for (let i = 0; i < Bridges.length; i++) {
+		let opt = document.createElement('option');
+		opt.value = Bridges[i].id;
+		opt.text = Bridges[i].name;
+		if (Bridges[i].id === selectedBridgeID) {
+			opt.selected = 'selected';
+		}
+		selBridgeList.appendChild(opt);
+	}
+}
+
+function selBridgeList_ShowPassword() {
+	let bridgeID = document.getElementById('selBridgeList').options[document.getElementById('selBridgeList').selectedIndex].value;
+
+	let bridgeObj = getBridge(bridgeID);
+	
+	if (bridgeObj.requiresPassword) {
+		document.getElementById('labelBridgeControlPassword').style.display = 'block';
+		document.getElementById('txtBridgeControlPassword').style.display = 'block';
+	}
+	else {
+		document.getElementById('labelBridgeControlPassword').style.display = 'none';
+		document.getElementById('txtBridgeControlPassword').style.display = 'none';
+	}
+}
+
+function getBridge(bridgeID) {
+	let bridgeObj = null;
+	
+	for (let i = 0; i < Bridges.length; i++) {
+		if (Bridges[i].id === bridgeID) {
+			bridgeObj = Bridges[i];
+		}
+	}
+	
+	return bridgeObj;
+}
+	
+String.prototype.replaceAll = function(search, replacement) {
+	var target = this;
+	return target.split(search).join(replacement);
+};
+
+function setupSpeechAPI() {
+	window.SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+	
+	if ('SpeechRecognition' in window) {
+		// speech recognition API supported
+		recognition = new window.SpeechRecognition();
+		
+		recognition.interimResults = true;
+		recognition.maxAlternatives = 10;
+		recognition.continuous = true;
+		
+		recognition.onresult = (event) => {
+			let interimTranscript = '';
+			let finalTransmitTranscript = '';
+			
+			for (let i = event.resultIndex; i < event.results.length; i++) {
+				let transcript = event.results[i][0].transcript;
+				
+				if (event.results[i].isFinal) {
+					finalTransmitTranscript += filterWords(transcript);
+					finalTranscript += finalTransmitTranscript;
+				}
+				else {
+					interimTranscript += transcript;
+				}
+			}
+			
+			sendCaption(finalTransmitTranscript, interimTranscript);
+			
+			document.getElementById('divCaptions').innerHTML = finalTranscript + '<i style=\'color:#999999;\'>' + interimTranscript + '</i>';
+		}
+		
+		recognition.onstart = function() {
+			document.getElementById('btnStartListening').style.display = 'none';
+			document.getElementById('btnStopListening').style.display = 'block';
+		}
+		
+		recognition.onend = function() {
+			if (!speechListenerStopped) { //if the 'stop listening' button was not explicitly pressed, start listening again
+				startSpeechAPI();
+				//the API seems to stop listening after ~5 minutes so this keeps it going
+			}
+			else {
+  				document.getElementById('btnStartListening').style.display = 'block';
+				document.getElementById('btnStopListening').style.display = 'none';
+			}
+		}
+	}
+	else {
+		//speech recognition API not supported, show an error
+		document.getElementById('divCaptions').innerHTML = 'Sorry, this browser does not support the Web Speech API. Please use a different browser.';
+		document.getElementById('divCaptionsContainer').style.visibility = 'visible';
+		document.getElementById('divCaptionsContainer').style.opacity = '1';
+	}
+}
+
+function startSpeechAPI() {
+	if (recognition !== null) {
+		recognition.start();
+		document.getElementById('divCaptionsContainer').style.visibility = 'visible';
+		document.getElementById('divCaptionsContainer').style.opacity = '1';
+	}
+}
+	
+function stopSpeechAPI() {
+	if (recognition !== null) {
+		recognition.stop();
+	}
+}
+	
+function sendCaption(finalTranscript, interimTranscript) {
+	let chkSendToBridge = document.getElementById('chkSendToBridge');
+	
+	if (chkSendToBridge.checked) {
+		socket.emit('newcaption', selectedBridgeID, finalTranscript, interimTranscript);
+	}
+}
+
+//Adds the replacement word to the dictionary
+function addReplaceWord(strWordToReplace, strNewWord) {
+	let wordObj = {};
+	wordObj.word = strWordToReplace;
+	wordObj.replaceWord = strNewWord;
+	WordDictionary.push(wordObj);
+	
+	socket.emit('addword', selectedBridgeID, strWordToReplace, strNewWord);
+	
+	updateWordList();
+}
+
+//Deletes the word from the dictionary
+function deleteWord(strWord) {
+	socket.emit('deleteword', selectedBridgeID, strWord);
+}
+
+//loop through WordDictionary array and update the div
+function updateWordList() {
+	let divWords = document.getElementById('divWords');
+	let table = document.createElement('table');
+	
+	for (let i = 0; i < WordDictionary.length; i++) {
+		let row = document.createElement('tr');
+		
+		let cellWord = document.createElement('td');
+		let cellReplaceWord = document.createElement('td');
+		let cellDelete = document.createElement('td');
+		
+		let btnDelete = document.createElement('button');
+		btnDelete.innerHTML = 'x';
+		btnDelete.setAttribute('onclick', 'deleteWord(\'' + WordDictionary[i].word + '\');');
+		
+		cellWord.textContent = WordDictionary[i].word;
+		cellReplaceWord.textContent = WordDictionary[i].replaceWord;
+		cellDelete.appendChild(btnDelete);
+		
+		row.appendChild(cellWord);
+		row.appendChild(cellReplaceWord);
+		row.appendChild(cellDelete);
+		table.appendChild(row);
+	}
+	
+	divWords.innerHTML = '';
+	divWords.appendChild(table);
+}
+	
+function filterWords(transcript) {
+	for (let i = 0; i < WordDictionary.length; i++) {
+		transcript = transcript.replaceAll(WordDictionary[i].word, WordDictionary[i].replaceWord);
+	}
+	
+	return transcript;
+}
+	
+function addSelectionToDictionary() {
+	if (window.getSelection) {
+		let txt = window.getSelection();
+		
+		document.getElementById('txtWord').value = txt;
+	}
+}
+</script>
+</head>
+<body onLoad='onLoad();'>
+<div id='container'>
+	<div id='divGlobalCurrentLogo'></div>
+	<div id='divTitle'><a href='/about'>About this software</a></div>
+	<div id='divCaptionConfig'>
+		<span style='font-weight:bold; font-size: 16px;'>Caption Config</span><br />
+		<button id='btnStartListening'>Start Listening</button>
+		<button id='btnStopListening'>Stop Listening</button>
+	</div>
+	<div id='divBridgeConfig'>
+		<span style='font-weight:bold; font-size: 16px;'>Bridge Config</span><br />
+		<label id='labelBridgeList'>Bridge:</label>
+		<select id='selBridgeList' onchange='selBridgeList_ShowPassword();'>
+			<option value='0'>(select a bridge)</option>
+		</select><br />
+		<label id='labelBridgeControlPassword' for='txtBridgeControlPassword'>Password:</label><input type='password' size='15' id='txtBridgeControlPassword' /><br />
+		<button id='btnDisconnectBridge'>Disconnect</button><br />
+		<button id='btnConnectToBridge'>Connect to Bridge</button><br />
+		<span id='spanBridgeConnectionStatusCircle' class='dot disconnected_dot'></span>
+		<a href='/config'><img id='settingsImage' src='images/settings.png' alt='Config' /></a>
+	</div>
+	<div id='divConnectionStatus'>
+		<div id='divConnectedClients'>
+			Connected Clients: <span id='clientsNumber'>0</span>
+		</div>
+		<div class='onoffswitch' id='divSendToBridge'>
+			<input type='checkbox' class='onoffswitch-checkbox' id='chkSendToBridge'>
+			<label class='onoffswitch-label' for='chkSendToBridge'>
+				<span class='onoffswitch-inner onoffswitch-inner-senddata'></span>
+				<span class='onoffswitch-switch'></span>
+			</label>
+		</div>
+		<div class='onoffswitch' id='divGoToLogo'>
+			<input type='checkbox' class='onoffswitch-checkbox' id='chkGoToLogo' checked>
+			<label class='onoffswitch-label' for='chkGoToLogo'>
+				<span class='onoffswitch-inner onoffswitch-inner-GoToLogo'></span>
+				<span class='onoffswitch-switch'></span>
+			</label>
+		</div>
+		<div class='onoffswitch' id='divKeepAwake'>
+			<input type='checkbox' class='onoffswitch-checkbox' id='chkKeepAwake'>
+			<label class='onoffswitch-label' for='chkKeepAwake'>
+				<span class='onoffswitch-inner onoffswitch-inner-KeepAwake'></span>
+				<span class='onoffswitch-switch'></span>
+			</label>
+		</div>
+	</div>
+	<div id='divLogContainer'>
+		<div id='divLog'></div>
+	</div>
+	<div id='divAnnouncements'>
+		Redirect to:<br />
+		<input type='text' id='txtAnnouncements_URL' value='http://www.fellowshipgreenville.org/sermons' />
+		<button id='btnAnnouncements_RedirectTo'>Redirect to URL</button>
+		<br /><br />
+		Send text/announcement:<br />
+		<textarea rows='4' cols='50' id='txtAnnouncements_Text'></textarea>
+		<button id='btnAnnouncements_SendText'>Send</button>
+		<button id='btnAnnouncements_ReloadListeners'>Remotely Reload All Listeners</button>
+	</div>
+	<div id='divCaptionsContainer'>
+		<div id='divCaptions'></div>
+		<div id='divCaptionControls'>
+			<button id='btnClearCaptions'>Clear</button>
+			<button id='btnSaveCaptions'>Save Text To File</button>
+		</div>
+	</div>
+	<div id='divWordDictionaryContainer'>
+		<b>Word Dictionary:</b>
+		<div id='divAddWord'>
+			<label class='wordLabel'>Word:</label><input class='wordInput' type='text' id='txtWord' value='' />
+			<label class='wordLabel'>Replacement Word:</label><input class='wordInput' type='text' id='txtReplacementWord' value='' /><br />
+			<button class='wordButton' id='btnAddWord'>Add to Dictionary</button><br /><br />
+		</div>
+		<div id='divWords'>
+		</div>
+	</div>
+</div>
+</body>
+</html>
