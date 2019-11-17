@@ -9,6 +9,7 @@ const io = require('socket.io')(http);
 const defaultListenPort = 3000;
 
 const JSONdatafile = 'livecaption-data.json';
+const JSONlogfile = 'livecaption-log.json';
 
 const ConfigLogin = 'config';
 var ConfigPassword = 'config22';
@@ -23,6 +24,7 @@ const BridgePassword_Default = 'bridge22';
 var Bridges = []; //array of bridges/locations available
 
 var Clients = []; //array of people currently connected across entire service
+var ConnectionLog = []; //log of same array, but entries are not deleted when they disconnect
 
 var WordDictionary = []; //word replacement dictionary array
 
@@ -390,6 +392,14 @@ function AddClient(socket, bridgeID, type) {
 	
 	Clients.push(clientObj);
 	io.to('BridgeRoom-' + bridgeID).emit('client_connected', clientObj);
+	clientObj.datetime = Date.now();
+	ConnectionLog.push(clientObj);
+
+	fs.writeFile(JSONlogfile, JSON.stringify(ConnectionLog), 'utf8', function(error) {
+		if (error) { 
+			console.log('error saving connection log: ' + error);
+		}
+	});	
 }
 
 //Removes the listener from the global list of clients

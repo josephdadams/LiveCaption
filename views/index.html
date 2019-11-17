@@ -2,14 +2,13 @@
 <html>
 <head>
 	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>LiveCaption</title>
 	<style type='text/css'>
-		@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro);
-		
 		* {
 			margin: 0;
-			padding: 5px;
-			box-sizing: border-box;
+			/*padding: 5px;
+			box-sizing: border-box;*/
 		}
 
 		html {
@@ -26,111 +25,113 @@
 		.container {
 			position: relative;
 		}
-			
-		#divCaptions {
-			display: none;
-			text-align: center;
-			transition: color .5s ease 0s, opacity 0.5s linear;
-			font-size: 12vmin;
-		}
 
 		#divSelectBridge {
 			display: none;
-			width: 200px;
-			height: 600px;
 			font-size: 14px;
 			position: absolute;
-			left: 0;
-			right: 0;
-			top: 0;
-			bottom: 0;
-			margin: auto;
-			max-width:100%;
-			max-height:100%;
-		}
-
-		#divGlobalLogo {
-			display: flex;
+			top: 50%;
+			left: 50%;
+			margin-right: -50%;
+			transform: translate(-50%, -50%);
 			justify-content: center;
 		}
 
-		#selBridgeList {
-			font-size: 18px;
-			height: 30px;
-			width: 200px;
+		#divGlobalLogo {
+		}
+		
+		.imgGlobalLogo {
+			margin: auto;
+			display: block;
+			max-width: 50%;
+			max-height: 50%;
+		}
+		
+		#divSelect {
+
+		}
+		
+		.select-css {
+			display: block;
+			font-size: 14px;
+			font-family: sans-serif;
+			font-weight: 700;
+			color: #444;
+			/*line-height: 1.0;*/
+			padding: .6em 1.4em .5em .8em;
+			width: 50%;
+			max-width: 50%;
+			box-sizing: border-box;
+			margin: auto;
+			border: 1px solid #aaa;
+			box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
+			border-radius: .5em;
+			-moz-appearance: none;
+			-webkit-appearance: none;
+			appearance: none;
+			background-color: #fff;
+			background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'),
+			  linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%);
+			background-repeat: no-repeat, repeat;
+			background-position: right .7em top 50%, 0 0;
+			background-size: .65em auto, 100%;
+		}
+		.select-css::-ms-expand {
+			display: none;
+		}
+		.select-css:hover {
+			border-color: #888;
+		}
+		.select-css:focus {
+			border-color: #aaa;
+			box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7);
+			box-shadow: 0 0 0 3px -moz-mac-focusring;
+			color: #222;
+			outline: none;
+		}
+		.select-css option {
+			font-weight:normal;
 		}
 
 		#divBridgePassword {
 			display: none;
+		}
+		
+		#divCaptionContainer {
+			margin-top: 45px;
+			width: 100%;
 		}
 
 		#divLogo {
 			opacity: 0;
 			transition: opacity 0.5s linear;
 			display: none;
-			height: 100%;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			margin-right: -50%;
+			transform: translate(-50%, -50%);
+			justify-content: center;
 		}
 		
 		.imgLogo {
-			max-width: 100%;
-			max-height: 100vh;
 			margin: auto;
-		}
-
-		.select-box {
-			cursor: pointer;
-			position : relative;
-			max-width:  30em;
-			margin: 5em auto;
-			width: 100%;
-		}
-
-		.select, .label {
-			color: #414141;
 			display: block;
-			font: 400 17px/2em 'Source Sans Pro', sans-serif;
+			max-width: 50%;
+			max-height: 50%;
 		}
-
-		.select {
+		
+		#divCaptions {
+			display: none;
+			text-align: center;
+			transition: color .5s ease 0s, opacity 0.5s linear;
+			font-size: 12vmin;
 			width: 100%;
-			position: absolute;
-			top: 0;
-			padding: 5px 0;
-			height: 40px;
-			opacity: 0;
-			background: none transparent;
-			border: 0 none;
 		}
 		
-		.select-box1 {
-			background: #999999;
-			width: 200px;
-		}
-
-		.label {
-			position: relative;
-			padding: 5px 10px;
-			cursor: pointer;
-		}
-		
-		.open .label::after {
-			content: '▲';
-		}
-		
-		.label::after {
-			content: '▼';
-			font-size: 12px;
-			position: absolute;
-			right: 0;
-			top: 0;
-			padding: 5px 15px;
-			border-left: 1px solid #464646;
-		}
-		
-		#divLocation {
-			position: absolute;
+		#divLocationBar {
+			position: fixed;
 			top: 0px;
-			left: 0px;
 			height: 45px;
 			background: #cccccc;
 			width: 100%;
@@ -139,21 +140,18 @@
 		}
 		
 		#divGoBack {
-			position: absolute;
-			top: 0px;
-			left: 0px;
+			float: left;
 			cursor: pointer;
 			border-right: 1px solid #464646;
 			color: #414141;
 			background: #999999;
 			width: 100px;
+			height: 45px;
 			text-align: center;
 		}
 		
 		#divLocationName {
-			position: absolute;
-			top: 0px;
-			right: 5px;
+			float: right;
 			padding: 5px;
 			color: #414141;
 			background: #cccccc;
@@ -165,8 +163,7 @@
 		#divWaiting {
 			width: inherit;
 			text-align: center;
-			position: absolute;
-			top: 0px;
+			float: left;
 			animation: waiting-blink 1.5s ease infinite alternate;
 			display: none;
 			color: #000000;
@@ -182,8 +179,7 @@
 		#divAnnouncement {
 			width: inherit;
 			text-align: center;
-			position: absolute;
-			top: 0px;
+			float: left;
 			animation: waiting-blink 1.5s ease infinite alternate;
 			display: none;
 			color: #000000;
@@ -227,7 +223,7 @@
 		socket.on('globallogo', function(logo) {
 			let imgGlobalLogo = document.createElement('img');
 			imgGlobalLogo.src = logo;
-			imgGlobalLogo.height = '300';
+			imgGlobalLogo.className = 'imgGlobalLogo';
 			document.getElementById('divGlobalLogo').innerHTML = '';
 			document.getElementById('divGlobalLogo').appendChild(imgGlobalLogo);
 		});
@@ -325,7 +321,7 @@
 	}
 		
 	function hideAll() {
-		document.getElementById('divLocation').style.display = 'none';
+		document.getElementById('divLocationBar').style.display = 'none';
 		document.getElementById('divCaptions').style.display = 'none';
 		document.getElementById('divLogo').style.display = 'none';
 		document.getElementById('divSelectBridge').style.display = 'none';
@@ -343,8 +339,8 @@
 	function showLocationBar() {
 		let bridgeName = getBridgeFromID(selectedBridgeID).name;
 		
-		let divLocation = document.getElementById('divLocation');
-		divLocation.style.display = 'block';
+		let divLocationBar = document.getElementById('divLocationBar');
+		divLocationBar.style.display = 'block';
 		
 		let divLocationName = document.getElementById('divLocationName');
 		divLocationName.innerHTML = bridgeName;
@@ -451,7 +447,7 @@
 				setTimeout(function() {
 					document.getElementById('divLogo').innerHTML = '';
 					document.getElementById('divLogo').appendChild(imgObj);
-					document.getElementById('divLogo').style.display = 'grid';
+					document.getElementById('divLogo').style.display = 'block';
 					setTimeout(function() {
 						document.getElementById('divLogo').style.opacity = '1';
 					}, 50);
@@ -488,28 +484,27 @@
 </head>
 <body onLoad='onLoad();'>
 	<div id='container'>
-		<div id='divLogo'></div>
 		<div id='divSelectBridge'>
-			<div id='divGlobalLogo'></div>
-				<div class='select-box'>
-					<label for='selBridgeList' class='label select-box1'><span class='label-desc'>Choose location:</span></label>
-					<select id='selBridgeList' class='select'>
-						<option>Choose location</option>
-					</select>
-				</div>   
+				<div id='divGlobalLogo'></div>
+				<div id='divSelect'><select id='selBridgeList' class='select-css'>
+					<option>Choose location</option>
+					</select></div>
 			<div id='divBridgePassword'>
 				<span style='color:#ffffff;'>Password:</span>
 				<input type='password' id='txtObservePassword' size='15' />
 				<button id='btnLogin'>Login</button>
 			</div>
 		</div>
-		<div id='divLocation'>
+		<div id='divLocationBar'>
 			<div id='divWaiting'>WAITING FOR CAPTIONS TO BEGIN...</div>
 			<div id='divAnnouncement'></div>
 			<div id='divGoBack'>Go Back</div>
 			<div id='divLocationName'></div>
 		</div>
-		<div id='divCaptions'></div>
+		<div id='divCaptionContainer'>
+			<div id='divLogo'></div>
+			<div id='divCaptions'></div>
+		</div>
 	</div>
 </body>
 </html>
