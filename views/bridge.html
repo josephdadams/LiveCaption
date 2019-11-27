@@ -601,6 +601,7 @@ function BridgeRooms_Connect() {
 		//controls the bridge remotely from API commands received at the server
 		switch(command) {
 			case 'startlistening':
+				speechListenerStopped = false;
 				startSpeechAPI();
 				break;
 			case 'stoplistening':
@@ -620,6 +621,25 @@ function BridgeRooms_Connect() {
 			case 'logooff':
 				Bridge_GoToLogo(false);
 				document.getElementById('chkGoToLogo').checked = false;
+				break;
+			case 'clear':
+				Bridge_ClearCaptions();
+				break;
+			case 'start':
+				Bridge_ClearCaptions();
+				Bridge_GoToLogo(false);
+				document.getElementById('chkGoToLogo').checked = false;
+				document.getElementById('chkSendToBridge').checked = true;
+				speechListenerStopped = false;
+				startSpeechAPI();
+				break;
+			case 'stop':
+				speechListenerStopped = true;
+				stopSpeechAPI();
+				document.getElementById('chkSendToBridge').checked = false;
+				Bridge_GoToLogo(true);
+				document.getElementById('chkGoToLogo').checked = true;
+				Bridge_ClearCaptions();
 				break;
 			default:
 				break;
@@ -798,6 +818,7 @@ function selBridgeList_ShowPassword() {
 	else {
 		document.getElementById('labelBridgeControlPassword').style.display = 'none';
 		document.getElementById('txtBridgeControlPassword').style.display = 'none';
+		document.getElementById('txtBridgeControlPassword').value = '';
 	}
 }
 
@@ -1012,7 +1033,7 @@ function addSelectionToDictionary() {
 	</div>
 	<div id='divAnnouncements'>
 		Redirect to:<br />
-		<input type='text' id='txtAnnouncements_URL' value='http://www.techministry.blog' />
+		<input type='text' id='txtAnnouncements_URL' value='http://www.fellowshipgreenville.org/sermons' />
 		<button id='btnAnnouncements_RedirectTo'>Redirect to URL</button>
 		<br /><br />
 		Send text/announcement:<br />

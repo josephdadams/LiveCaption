@@ -305,7 +305,8 @@
 		socket.on('caption', function(finalTransmitTranscript, interimTranscript) {
 			let divCaptions = document.getElementById('divCaptions');
 			finalTranscript += finalTransmitTranscript;
-			divCaptions.innerHTML = finalTranscript + '<i style=\'color:#999999;\'>' + interimTranscript + '</i>';
+			//divCaptions.innerHTML = finalTranscript + '<i style=\'color:#999999;\'>' + interimTranscript + '</i>';
+			divCaptions.innerHTML = finalTranscript + interimTranscript;
 			divCaptions.scrollIntoView({behavior: 'smooth', block: 'end'});
 		});
 

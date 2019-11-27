@@ -114,6 +114,9 @@ app.post('/api/bridgecontrol', function (req, res) {
 			case 'stopdata':
 			case 'logoon':
 			case 'logooff':
+			case 'clear':
+			case 'start':
+			case 'stop':
 				response = ControlBridge(obj.bridgeID, obj.command, obj.password);
 				break;
 			default:
@@ -532,11 +535,18 @@ function loadFile() {
 
 //Saves settings to a local storage file for later recalling
 function saveFile() {
+	//removes the Bridges In Use property before saving, this is only a runtime property
+	let TempBridges = [];
+	for (let i = 0; i < Bridges.length; i++) {
+		TempBridges.push(Bridges[i]);
+		TempBridges[i].inUse = false;
+	}
+	
 	var myJson = {
 		ConfigPassword: ConfigPassword,
 		BridgePassword: BridgePassword,
 		GlobalLogo: GlobalLogo,
-		Bridges: Bridges,
+		Bridges: TempBridges,
 		WordDictionary: WordDictionary
 	};
 

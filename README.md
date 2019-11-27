@@ -79,6 +79,9 @@ The object should contain these values:
 * `stopdata`: Stops sending data.
 * `logoon`: Enables Logo Mode.
 * `logooff`: Disables Logo Mode.
+* `clear`: Clears any text that has been transcribed.
+* `start`: Performs `clear`, `logooff`, `senddata`, and `startlistening` all at the same time.
+* `stop`: Performs `stoplistening`, `stopdata`, `logoon`, and `clear` all at the same time.
 
 *Example:*
 ```javascript
