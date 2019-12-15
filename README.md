@@ -63,7 +63,10 @@ The default username is *config* and the default password is *config22*.
 1. A list of Bridges to select and join will be presented. If there is only one Bridge configured/enabled, that one will be joined automatically and no choices will be given.
 1. Captions will appear in real time as the data is sent from the Bridge Control page.
 
-## USING THE API FOR BRIDGE CONTROL
+## API FUNCTIONS
+The software supports a few different remote control options via an API.
+
+### USING THE API FOR BRIDGE CONTROL
 There is a simple API available to access certain Bridge Control functions.
 
 Send an HTTP POST request to `/api/bridgecontrol`, with a JSON object (Content Type of `application/json`).
@@ -72,7 +75,7 @@ The object should contain these values:
 2. `command`: The API command to send.
 3. `password`: The control password. Send "" if the password is blank.
 
-### AVAILABLE COMMANDS
+#### AVAILABLE COMMANDS
 * `startlistening`: Starts listening to incoming audio.
 * `stoplistening`: Stops listening to incoming audio.
 * `senddata`: Sends data to connected clients (send the transcribed text).
@@ -99,4 +102,26 @@ Other responses can include:
 * `invalid-bridgeid`: The bridgeID you sent was not found (or was not included in the request).
 * `bridge-not-inuse`: The bridge you attempted to control was not currently in use/in control (No one was connected to that Bridge from the Bridge Control page).
 * `invalid-command`: The command you sent was not one of the options.
+* `invalid-password`: The control password you sent was incorrect.
+
+### GETTING DATA ABOUT ACTIVE CLIENTS
+Send an HTTP POST request to `/api/clients`, with a JSON object (Content Type of `application/json`);
+The object should contain these values:
+1. `bridgeID`: The unique ID of the Bridge. You can get this from the Config page if you don't know the ID.
+3. `password`: The control password. Send "" if the password is blank.
+
+*Example:*
+```javascript
+{
+	bridgeID: "5d0b9ca7f",
+	password: "control22"
+}
+```
+
+`curl -d '{"bridgeID":"5d0b9ca7f","password":"control22"}' -H "Content-Type: application/json" -X POST http://127.0.0.1:3000/api/clients`
+
+If the bridge ID and password are valid, the server will return JSON data about the users currently connected to the particular bridge.
+Other responses can include:
+* `invalid-bridgeid`: The bridgeID you sent was not found (or was not included in the request).
+* `bridge-not-inuse`: The bridge you attempted to control was not currently in use/in control (No one was connected to that Bridge from the Bridge Control page).
 * `invalid-password`: The control password you sent was incorrect.

@@ -107,6 +107,12 @@ app.post('/api/bridgecontrol', function (req, res) {
 	let response = '';
 	
 	if (obj.bridgeID) {
+		let password = '';
+		
+		if (obj.password) {
+			password = obj.password;
+		}
+		
 		switch(obj.command) {
 			case 'startlistening':
 			case 'stoplistening':
@@ -117,7 +123,7 @@ app.post('/api/bridgecontrol', function (req, res) {
 			case 'clear':
 			case 'start':
 			case 'stop':
-				response = ControlBridge(obj.bridgeID, obj.command, obj.password);
+				response = ControlBridge(obj.bridgeID, obj.command, password);
 				break;
 			default:
 				response = 'invalid-command';
@@ -129,6 +135,28 @@ app.post('/api/bridgecontrol', function (req, res) {
 	
 	res.send({returnStatus: response});
 });
+
+app.post('/api/clients', function (req, res) {
+	let obj = req.body;
+	
+	let response = '';
+	
+	if (obj.bridgeID) {
+		let password = '';
+		
+		if (obj.password) {
+			password = obj.password;
+		}
+		
+		response = GetClients(obj.bridgeID, password);
+	}
+	else {
+		response = 'invalid-bridgeid';
+	}
+	
+	res.send({returnStatus: response});
+});
+
 
 //static images and libraries
 app.use(express.static('views/static'));
@@ -634,6 +662,29 @@ function ControlBridge(bridgeID, command, password) {
 			if (GetBridgeInUse(bridgeID)) {
 				io.to('BridgeRoom-' + bridgeID).emit('bridge_control', command);
 				return 'command-sent';
+			}
+			else {
+				return 'bridge-not-inuse';
+			}
+		}
+		else {
+			return 'invalid-password';
+		}
+	}
+	else {
+		return 'invalid-bridgeid';
+	}
+}
+
+function GetClients(bridgeID, password) {
+	let bridgeObj = GetBridge(bridgeID);
+	
+	if (bridgeObj) {
+		if (bridgeObj.controlPassword === password) {
+			if (GetBridgeInUse(bridgeID)) {
+				return Clients.filter(function(client) {
+					return client.bridgeID === bridgeID;
+				});
 			}
 			else {
 				return 'bridge-not-inuse';
