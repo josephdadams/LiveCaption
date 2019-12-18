@@ -208,6 +208,10 @@
 			display: none;
 		}
 		
+		#divGlobalTextUpdateButton {
+			display: none;
+		}
+		
 		#divLogContainer {
 			background: #ffffff;
 			width: 515px;
@@ -282,6 +286,10 @@
 				UpdateGlobalLogo();
 			});
 
+			document.getElementById('btnGlobalTextUpdate').addEventListener('click', function (e) {
+				UpdateGlobalText();
+			});
+			
 			socket = io.connect();
 
 			socket.on('connect', function() {
@@ -289,6 +297,7 @@
 				socket.emit('room', 'Config');
 				socket.emit('config_bridgeroom_getall');
 				socket.emit('config_getgloballogo');
+				socket.emit('config_getglobaltext');
 			});
 
 			socket.on('config_bridgerooms', function(bridgeArray){
@@ -304,6 +313,10 @@
 				imgGlobalLogo.style.border = '#000000 1px solid';
 				document.getElementById('divGlobalCurrentLogo').innerHTML = '';
 				document.getElementById('divGlobalCurrentLogo').appendChild(imgGlobalLogo);
+			});
+			
+			socket.on('config_globaltext', function(text) {
+				document.getElementById('txtGlobalText').value = text;
 			});
 
 			socket.on('config_status', function (status) {
@@ -349,6 +362,12 @@
 						break;
 					case 'globallogo_updatefail':
 						updateLog('Unable to update Global Logo.', 'failure');
+						break;
+					case 'globaltext_update':
+						updateLog('Global Text successfully updated.', 'success');
+						break;
+					case 'globaltext_updatefail':
+						updateLog('Unable to update Global Text.', 'failure');
 						break;
 					default:
 						updateLog('Unspecified error occurred.', 'warning');
@@ -623,6 +642,11 @@
 
 			socket.emit('config_globallogo_update', logo); // send it to the server
 		}
+		
+		function UpdateGlobalText() {
+			let text = document.getElementById('txtGlobalText').value;
+			socket.emit('config_globaltext_update', text); // send it to the server
+		}
 	</script>
 </head>
 <body onLoad='onLoad();'>
@@ -668,6 +692,9 @@
 			<b>Change Global Logo:</b><br />
 			<label for='fileGlobalLogo'>Logo:</label><input type='file' id='fileGlobalLogo' onchange='encodeGlobalImageFileAsURL()' /><div id='divGlobalCurrentLogo'></div><br />
 			<div id='divGlobalLogoUpdateButton'><button id='btnGlobalLogoUpdate'>Update Logo</button></div>
+			<b>Change Global Text:</b><br />
+			<label for='txtGlobalText'>Global Text:</label><input type='text' id='txtGlobalText' value='' size='30' /><br />
+			<button id='btnGlobalTextUpdate'>Change Global Text</button>
 		</div>
 		<div id='divLogContainer'>
 			<div id='divLog'></div>

@@ -40,6 +40,12 @@
 		#divGlobalLogo {
 		}
 		
+		#divGlobalText {
+			margin: auto;
+			display: block;
+			color: #ffffff;
+		}
+		
 		.imgGlobalLogo {
 			margin: auto;
 			display: block;
@@ -227,6 +233,10 @@
 			document.getElementById('divGlobalLogo').innerHTML = '';
 			document.getElementById('divGlobalLogo').appendChild(imgGlobalLogo);
 		});
+		
+		socket.on('globaltext', function(text) {
+			document.getElementById('divGlobalText').innerHTML = text;
+		});
 
 		socket.on('status', function(status) {
 			switch(status) {
@@ -341,7 +351,7 @@
 		let bridgeName = getBridgeFromID(selectedBridgeID).name;
 		
 		let divLocationBar = document.getElementById('divLocationBar');
-		divLocationBar.style.display = 'block';
+		//divLocationBar.style.display = 'block';
 		
 		let divLocationName = document.getElementById('divLocationName');
 		divLocationName.innerHTML = bridgeName;
@@ -487,6 +497,7 @@
 	<div id='container'>
 		<div id='divSelectBridge'>
 				<div id='divGlobalLogo'></div>
+				<div id='divGlobalText'></div>
 				<div id='divSelect'><select id='selBridgeList' class='select-css'>
 					<option>Choose location</option>
 					</select></div>

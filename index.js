@@ -16,6 +16,7 @@ var ConfigPassword = 'config22';
 const ConfigPassword_Default = 'config22';
 
 var GlobalLogo = '';
+var GlobalText = '';
 
 const BridgeLogin = 'bridge';
 var BridgePassword = 'bridge22';
@@ -175,6 +176,11 @@ io.sockets.on('connection', function(socket) {
 		socket.emit('config_globallogo', GlobalLogo);
 	});
 	
+	//Return Current Global Text
+	socket.on('config_getglobaltext', function () {
+		socket.emit('config_globaltext', GlobalText);
+	});
+	
 	//Add New Bridge
 	socket.on('config_bridgeroom_add', function (bridgeRoomObj) {
 		if (bridgeRoomObj.logo === '') {
@@ -257,6 +263,13 @@ io.sockets.on('connection', function(socket) {
 		GlobalLogo = logo;
 		saveFile();
 		socket.emit('config_status', 'globallogo_update');
+	});
+	
+	//Change Global Text
+	socket.on('config_globaltext_update', function(text) {
+		GlobalText = text;
+		saveFile();
+		socket.emit('config_status', 'globaltext_update');
 	});
 	
 	// Bridge Sockets
@@ -369,6 +382,7 @@ io.sockets.on('connection', function(socket) {
 				socket.join(room);
 				socket.emit('bridgerooms', GetAvailableBridges());
 				socket.emit('globallogo', GlobalLogo);
+				socket.emit('globaltext', GlobalText);
 				break;
 			case 'BridgeRooms':
 				socket.join(room);
@@ -550,6 +564,7 @@ function loadFile() {
 		ConfigPassword = myJson.ConfigPassword;
 		BridgePassword = myJson.BridgePassword;
 		GlobalLogo = myJson.GlobalLogo;
+		GlobalText = myJson.GlobalText;
 		WordDictionary = myJson.WordDictionary;
 	}
 	catch (error) {
@@ -557,6 +572,7 @@ function loadFile() {
 		ConfigPassword = ConfigPassword_Default;
 		BridgePassword = BridgePassword_Default;
 		GlobalLogo = null;
+		GlobalText = '';
 		WordDictionary = [];
 	}
 }
@@ -574,6 +590,7 @@ function saveFile() {
 		ConfigPassword: ConfigPassword,
 		BridgePassword: BridgePassword,
 		GlobalLogo: GlobalLogo,
+		GlobalText: GlobalText,
 		Bridges: TempBridges,
 		WordDictionary: WordDictionary
 	};

@@ -26,8 +26,9 @@ This software will run a webserver allowing the user to transcript live audio to
 1. Go to the Config page on the server running *LiveCaption*: `http://127.0.0.1:3000/config` It runs on port 3000 by default.
 1. You will be prompted for the Config page login. The default username is *config* and the default password is *config22*.
 1. This page enables you to Add/Edit Bridges. Bridges are the "rooms" that viewers can join to view captions. You can think of them as locations or venues.
-1. You can also change the login password for both the Config and Bridge Control pages.
-1. You also have the option to set a Global Logo. There is one included in the default dataset, but if you want custom branding, upload your own logo.
+1. You can change the login password for both the Config and Bridge Control pages.
+1. You have the option to set a Global Logo. There is one included in the default dataset, but if you want custom branding, upload your own logo.
+1. You can set Global Text, which will appear on the landing page for viewers to see when the page first loads.
 
 ### ADDING/EDITING BRIDGES
 1. Each Bridge is auto-assigned a unique ID field.
