@@ -11,7 +11,7 @@
 		"captions",
 		"captioning",
 		"transcriptions",
-		"transcribe",
+		"transcribe"
     ],
     "author": "Joseph Adams <josephdadams@gmail.com>",
     "dependencies": {
